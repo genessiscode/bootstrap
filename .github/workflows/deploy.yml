@@ -35,7 +35,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # If your files are inside a specific folder (like 'dist' or 'public'), change '.' to that folder path
-          path: '.' 
+          path: './pages' 
 
       - name: Deploy to GitHub Pages
         id: deployment
