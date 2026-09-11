@@ -1,22 +1,42 @@
-name: Deploy Bootstrap to GitHub
+name: Deploy Static Content to Pages
 
 on:
   push:
-    branches: [main, master]
+    branches: ["main"] # Triggers the workflow every time you push to the main branch
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps: deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Configure Git
-        run: |
-          git config user.name "genessiscode"
-          git config user.email "noreply@github.com"
-      - name: Push to bootstrap repo
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git remote add bootstrap https://x-access-token:${GITHUB_TOKEN}@github.com/genessiscode/bootstrap.git 2>/dev/null || true
-          git push bootstrap main
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # If your files are inside a specific folder (like 'dist' or 'public'), change '.' to that folder path
+          path: '.' 
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
