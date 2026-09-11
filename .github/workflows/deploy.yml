@@ -22,7 +22,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps: deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -35,7 +35,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # If your files are inside a specific folder (like 'dist' or 'public'), change '.' to that folder path
-          path: './pages' 
+          path: '.' 
 
       - name: Deploy to GitHub Pages
         id: deployment
