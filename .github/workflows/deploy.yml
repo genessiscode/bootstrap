@@ -22,7 +22,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps. deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -30,13 +30,25 @@ jobs:
         
       - name: Copy index.html to Root
         run: cp pages/index.html .
+
+      # 🆕 AUTOMATED STEP: Automatically rewrite ../ paths to ./ so styling works
+      - name: Fix Asset Paths for Root Context
+        run: |
+          sed -i 's|href="../|href="./|g' index.html
+          sed -i 's|src="../|src="./|g' index.html
+
+      # 🆕 AUTOMATED STEP: Make sure navbar links back into the pages subfolder still work
+      - name: Fix Subpage Navigation Links
+        run: |
+          sed -i 's|href="\(index.html\)"|href="./pages/\1"|g' index.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # If your files are inside a specific folder (like 'dist' or 'public'), change '.' to that folder path
+          # Keep this as '.' to upload root assets (css, scripts, and the newly copied index.html)
           path: '.' 
 
       - name: Deploy to GitHub Pages
